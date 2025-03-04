@@ -53,19 +53,17 @@ namespace ClinicBooking.Controllers
             }
             return RedirectToAction("Index", "NewsArticle");
         }
-        // GET: AuthController/Details/5
+     
         public ActionResult Details(int id)
         {
             return View();
         }
 
-        // GET: AuthController/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: AuthController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(IFormCollection collection)
