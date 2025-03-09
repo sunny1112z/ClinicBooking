@@ -1,123 +1,56 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using ClinicBooking.
-namespace ClinicBooking.Controllers
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
+
+public class AuthController : Controller
 {
-    public class AuthController : Controller
+    private readonly AuthService _authService;
+    private readonly AccountService _accountService;
+
+    public AuthController(AuthService authService, AccountService accountService)
     {
-        private readonly AuthService _authService;
+        _authService = authService;
+        _accountService = accountService;
+    }
 
-        public AuthController(AuthService authService)
-        {
-            _authService = authService;
-        }
-        // GET: AuthController
-        public ActionResult Index()
-        {
-            return View();
-        }
-        [HttpPost]
-        public async Task<IActionResult> Login(string email, string password)
-        {
-            var user = await _authService.AuthenticateUser(email, password);
-            var userRole = await _authService.GetIsActiveByEmail(email);
-            if (user == null)
-            {
-                ViewBag.Error = "Invalid email or password";
-                return View();
-            }
-            if (userRole == 1)
-            {
-                HttpContext.Session.SetInt32("UserId", user.AccountId);
-                HttpContext.Session.SetInt32("UserRole", user.AccountRole ?? -1);
+    [HttpGet]
+    public IActionResult Login()
+    {
+        return View();
+    }
 
-                if (user.AccountRole == 0)
-                {
-                    return RedirectToAction("Index", "Account");
-                }
-                if (user.AccountRole == 1)
-                {
-                    return RedirectToAction("Index", "Category");
-                }
-                if (user.AccountRole == 2)
-                {
-                    return RedirectToAction("Manage", "NewsArticle");
-                }
-
-            }
-            else
-            {
-                TempData["ErrorMessage"] = "Your account has been locked";
-                return View("CannotLogin");
-
-            }
-            return RedirectToAction("Index", "NewsArticle");
-        }
-     
-        public ActionResult Details(int id)
+    [HttpPost]
+    public async Task<IActionResult> Login(LoginModel model)
+    {
+        var user = _accountService.GetUserByUsername(model.Username);
+        if (user == null || !_authService.VerifyPassword(model.Password, user.PasswordHash))
         {
-            return View();
+            ModelState.AddModelError("", "Invalid username or password");
+            return View(model);
         }
 
-        public ActionResult Create()
-        {
-            return View();
-        }
+        // ✅ Lấy RoleName từ bảng Role
+        var roleName = user.Role.RoleName;
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        // ✅ Tạo JWT Token
+        var token = _authService.GenerateJwtToken(user.Username, roleName);
 
-        // GET: AuthController/Edit/5
-        public ActionResult Edit(int id)
+        // ✅ Lưu JWT vào Cookie
+        Response.Cookies.Append("JwtToken", token, new CookieOptions
         {
-            return View();
-        }
+            HttpOnly = true,
+            Secure = true,
+            Expires = DateTime.UtcNow.AddMinutes(60)
+        });
 
-        // POST: AuthController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        return RedirectToAction("Index", "Home");
+    }
 
-        // GET: AuthController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: AuthController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+    [HttpPost]
+    public IActionResult Logout()
+    {
+        Response.Cookies.Delete("JwtToken");
+        return RedirectToAction("Login");
     }
 }

@@ -1,14 +1,15 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using ClinicBooking.Entities;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.Extensions.Configuration;
 
-public class AuthService
+public class JwtService
 {
     private readonly IConfiguration _config;
 
-    public AuthService(IConfiguration config)
+    public JwtService(IConfiguration config)
     {
         _config = config;
     }
@@ -21,9 +22,9 @@ public class AuthService
 
         var claims = new[]
         {
-            new Claim(ClaimTypes.Name, username),
-            new Claim(ClaimTypes.Role, role), // ✅ Role là string (Admin, User, Doctor)
-        };
+        new Claim(ClaimTypes.Name, username),
+        new Claim(ClaimTypes.Role, role), 
+    };
 
         var token = new JwtSecurityToken(
             issuer: jwtSettings["Issuer"],
@@ -36,8 +37,4 @@ public class AuthService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public bool VerifyPassword(string inputPassword, string hashedPassword)
-    {
-        return BCrypt.Net.BCrypt.Verify(inputPassword, hashedPassword);
-    }
 }
