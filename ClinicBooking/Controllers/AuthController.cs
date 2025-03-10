@@ -104,7 +104,7 @@ namespace ClinicBooking.Controllers
             return View();
         }
 
-        // 🟢 Xử lý yêu cầu quên mật khẩu
+        //  Xử lý yêu cầu quên mật khẩu
         [HttpPost]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordModel model)
         {
@@ -124,33 +124,53 @@ namespace ClinicBooking.Controllers
             return View();
         }
 
-        // 🟢 Hiển thị form đặt lại mật khẩu
+        //  đặt lại mật khẩu
         [HttpGet]
-        public IActionResult ResetPassword(string token)
+        public async Task<IActionResult> ResetPassword(string token)
         {
-            var model = new ResetPasswordModel { Token = token };
+            if (string.IsNullOrEmpty(token))
+            {
+                return NotFound(); 
+            }
+
+            
+            var user = await _userRepository.GetByResetTokenAsync(token);
+            if (user == null || user.ResetTokenExpiry < DateTime.UtcNow)
+            {
+                return NotFound(); 
+            }
+
+            var model = new ResetPasswordModel
+            {
+                Token = token,
+                Email = user.Email 
+            };
+
             return View(model);
         }
 
-        // 🟢 Xử lý đặt lại mật khẩu
+
+
         [HttpPost]
         public async Task<IActionResult> ResetPassword(ResetPasswordModel model)
         {
             if (!ModelState.IsValid)
             {
-                return View(model);
+                return View(model); 
             }
 
             bool result = await _authService.ResetPasswordAsync(model.Token, model.NewPassword);
             if (!result)
             {
                 ViewBag.Error = "Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn!";
-                return View(model);
+                return View(model); // Trả lại lỗi nếu token không hợp lệ
             }
 
-            ViewBag.Message = "Mật khẩu đã được đặt lại thành công!";
+            TempData["Message"] = "Mật khẩu đã được đặt lại thành công!";
             return RedirectToAction("Login", "Auth");
         }
+
+
 
     }
 }

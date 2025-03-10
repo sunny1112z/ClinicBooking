@@ -14,10 +14,13 @@ namespace ClinicBooking.Services
         private readonly IConfiguration _configuration;
         private readonly IUserRepository _userRepository;
         private readonly EmailService _emailService;
-        public AuthService(IConfiguration configuration , IUserRepository userRepository , EmailService emailService)
+        public AuthService(IConfiguration configuration, IUserRepository userRepository, EmailService emailService)
         {
             _configuration = configuration;
+            _userRepository = userRepository;  
+            _emailService = emailService;      
         }
+
 
         public string HashPassword(string password)
         {
@@ -62,20 +65,27 @@ namespace ClinicBooking.Services
         public async Task<bool> ForgotPasswordAsync(string email)
         {
             var user = await _userRepository.GetByEmailAsync(email);
-            if (user == null) return false;
 
-            string verificationCode = Guid.NewGuid().ToString().Substring(0, 8);
-            DateTime expiry = DateTime.UtcNow.AddMinutes(30);
-            await _userRepository.SaveResetTokenAsync(user.UserId, verificationCode, expiry);
+            if (user == null)
+            {
+                throw new Exception("Không tìm thấy người dùng");
+            }
 
-            // Tạo reset link sử dụng verificationCode
-            string resetLink = $"https://yourwebsite.com/Auth/ResetPassword?code={verificationCode}";
+            // Tạo token (mã xác nhận) và thời gian hết hạn cho token
+            string token = Guid.NewGuid().ToString(); // Token duy nhất
+            DateTime expiry = DateTime.UtcNow.AddMinutes(30); // Token có hạn 30 phút
 
-            // Gửi email reset password với reset link
+            // Lưu token vào cơ sở dữ liệu cùng với thời gian hết hạn
+            await _userRepository.SaveResetTokenAsync(user.UserId, token, expiry);
+
+            // Tạo URL reset mật khẩu và gửi qua email
+            string resetLink = $"https://localhost:7278/Auth/ResetPassword?token={token}";
             await _emailService.SendEmailAsync(user.Email, "Reset Password", $"Click here to reset: {resetLink}");
 
             return true;
         }
+
+
 
         // 🟢 Đặt lại mật khẩu: Kiểm tra token, cập nhật mật khẩu mới
         public async Task<bool> ResetPasswordAsync(string token, string newPassword)

@@ -30,7 +30,7 @@ public class AccountService
             throw new Exception("Username already exists.");
         }
 
-        // ✅ Gọi Repo để lấy Role
+        //  Gọi Repo để lấy Role
         var userRole = await _userRepository.GetRoleByIdAsync(2);
         if (userRole == null)
         {
