@@ -11,6 +11,8 @@ namespace ClinicBooking_Data.Repositories.Interfaces
     {
         Task<User?> GetByUsernameAsync(string username);
         Task<Role?> GetRoleByIdAsync(int roleId);
-
+        Task<User?> GetByEmailAsync(string email);
+        Task SaveResetTokenAsync(int userId, string token, DateTime expiry);
+        Task<User?> GetByResetTokenAsync(string token);
     }
 }

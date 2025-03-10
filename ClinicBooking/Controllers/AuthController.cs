@@ -15,7 +15,7 @@ namespace ClinicBooking.Controllers
         private readonly IUserRepository _userRepository;
         private readonly AccountService _accountService;
 
-        public AuthController(AuthService authService, IUserRepository userRepository , AccountService accountService)
+        public AuthController(AuthService authService, IUserRepository userRepository, AccountService accountService)
         {
             _authService = authService;
             _userRepository = userRepository;
@@ -41,25 +41,21 @@ namespace ClinicBooking.Controllers
             if (user == null || !_authService.VerifyPassword(model.Password, user.PasswordHash))
             {
                 ModelState.AddModelError("", "Invalid username or password");
-                
+                return View(model);
             }
 
-            var token = _authService.GenerateJwtToken(user.Username, user.Role.RoleId);
-
-            Console.WriteLine($"Token: {token}");
+            var token = _authService.GenerateJwtToken(user.Username, user.Role?.RoleId ?? 0);
 
             Response.Cookies.Append("JwtToken", token, new CookieOptions
             {
                 HttpOnly = true,
-                Secure = Request.IsHttps, 
+                Secure = Request.IsHttps,
                 Expires = DateTime.UtcNow.AddMinutes(60)
             });
 
-            Console.WriteLine("Token set in cookies.");
-
             return RedirectToAction("Index", "Home");
-
         }
+
 
 
 
@@ -90,7 +86,7 @@ namespace ClinicBooking.Controllers
                     user.Email,
                     user.Phone,
                     user.Username,
-                    user.PasswordHash 
+                    user.PasswordHash
                 );
 
                 return RedirectToAction("Login");
@@ -102,6 +98,59 @@ namespace ClinicBooking.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        // 🟢 Xử lý yêu cầu quên mật khẩu
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            bool result = await _authService.ForgotPasswordAsync(model.Email);
+            if (!result)
+            {
+                ViewBag.Error = "Email không tồn tại!";
+                return View(model);
+            }
+
+            ViewBag.Message = "Email đặt lại mật khẩu đã được gửi!";
+            return View();
+        }
+
+        // 🟢 Hiển thị form đặt lại mật khẩu
+        [HttpGet]
+        public IActionResult ResetPassword(string token)
+        {
+            var model = new ResetPasswordModel { Token = token };
+            return View(model);
+        }
+
+        // 🟢 Xử lý đặt lại mật khẩu
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            bool result = await _authService.ResetPasswordAsync(model.Token, model.NewPassword);
+            if (!result)
+            {
+                ViewBag.Error = "Liên kết đặt lại mật khẩu không hợp lệ hoặc đã hết hạn!";
+                return View(model);
+            }
+
+            ViewBag.Message = "Mật khẩu đã được đặt lại thành công!";
+            return RedirectToAction("Login", "Auth");
+        }
 
     }
 }

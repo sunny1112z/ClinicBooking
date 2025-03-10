@@ -5,14 +5,16 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using BCrypt.Net;
+using ClinicBooking_Data.Repositories.Interfaces;
 
 namespace ClinicBooking.Services
 {
     public class AuthService
     {
         private readonly IConfiguration _configuration;
-
-        public AuthService(IConfiguration configuration)
+        private readonly IUserRepository _userRepository;
+        private readonly EmailService _emailService;
+        public AuthService(IConfiguration configuration , IUserRepository userRepository , EmailService emailService)
         {
             _configuration = configuration;
         }
@@ -57,6 +59,39 @@ namespace ClinicBooking.Services
 
             return jwt;
         }
+        public async Task<bool> ForgotPasswordAsync(string email)
+        {
+            var user = await _userRepository.GetByEmailAsync(email);
+            if (user == null) return false;
 
+            string verificationCode = Guid.NewGuid().ToString().Substring(0, 8);
+            DateTime expiry = DateTime.UtcNow.AddMinutes(30);
+            await _userRepository.SaveResetTokenAsync(user.UserId, verificationCode, expiry);
+
+            // Tạo reset link sử dụng verificationCode
+            string resetLink = $"https://yourwebsite.com/Auth/ResetPassword?code={verificationCode}";
+
+            // Gửi email reset password với reset link
+            await _emailService.SendEmailAsync(user.Email, "Reset Password", $"Click here to reset: {resetLink}");
+
+            return true;
+        }
+
+        // 🟢 Đặt lại mật khẩu: Kiểm tra token, cập nhật mật khẩu mới
+        public async Task<bool> ResetPasswordAsync(string token, string newPassword)
+        {
+            var user = await _userRepository.GetByResetTokenAsync(token);
+            if (user == null || user.ResetTokenExpiry < DateTime.UtcNow)
+            {
+                return false;
+            }
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            user.ResetToken = null;
+            user.ResetTokenExpiry = null;
+
+            await _userRepository.UpdateAsync(user);
+            return true;
+        }
     }
 }
