@@ -1,0 +1,52 @@
+﻿@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="d-flex justify-content-center align-items-center min-vh-100 bg-light">
+    <div class="card shadow-lg p-4" style="width: 400px; border-radius: 12px;">
+        <h2 class="text-center text-primary fw-bold mb-3">Create an Account</h2>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger text-center">@ViewBag.Error</div>
+        }
+
+        <form method="post">
+            <div class="mb-3">
+                <label class="form-label fw-bold">Full Name</label>
+                <input type="text" name="fullname" class="form-control" placeholder="Enter your full name" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Email</label>
+                <input type="email" name="email" class="form-control" placeholder="Enter your email" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Phone</label>
+                <input type="text" name="phone" class="form-control" placeholder="Enter your phone number" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Username</label>
+                <input type="text" name="username" class="form-control" placeholder="Choose a username" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Password</label>
+                <input type="password" name="password" class="form-control" placeholder="Create a password" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Confirm Password</label>
+                <input type="password" name="confirmPassword" class="form-control" placeholder="Confirm your password" required />
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2">Register</button>
+        </form>
+
+        <div class="text-center mt-3">
+            <small>Already have an account? <a href="/Auth/Login" class="text-decoration-none text-primary fw-bold">Login</a></small>
+        </div>
+    </div>
+</div>

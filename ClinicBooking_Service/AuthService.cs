@@ -1,43 +1,62 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using BCrypt.Net;
 
-public class AuthService
+namespace ClinicBooking.Services
 {
-    private readonly IConfiguration _config;
-
-    public AuthService(IConfiguration config)
+    public class AuthService
     {
-        _config = config;
-    }
+        private readonly IConfiguration _configuration;
 
-    public string GenerateJwtToken(string username, string role)
-    {
-        var jwtSettings = _config.GetSection("JwtSettings");
-        var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]));
-        var credentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
-
-        var claims = new[]
+        public AuthService(IConfiguration configuration)
         {
+            _configuration = configuration;
+        }
+
+        public string HashPassword(string password)
+        {
+            return BCrypt.Net.BCrypt.HashPassword(password);
+        }
+
+        public bool VerifyPassword(string password, string hashedPassword)
+        {
+            return BCrypt.Net.BCrypt.Verify(password, hashedPassword);
+        }
+
+        public string GenerateJwtToken(string username, int role)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var keyString = _configuration["Jwt:Key"];
+
+            if (string.IsNullOrEmpty(keyString))
+            {
+                throw new Exception("JWT Key is missing from configuration.");
+            }
+
+            var key = Encoding.UTF8.GetBytes(keyString);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
             new Claim(ClaimTypes.Name, username),
-            new Claim(ClaimTypes.Role, role), // ✅ Role là string (Admin, User, Doctor)
-        };
+            new Claim(ClaimTypes.Role, role.ToString())
+        }),
+                Expires = DateTime.UtcNow.AddHours(1),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
 
-        var token = new JwtSecurityToken(
-            issuer: jwtSettings["Issuer"],
-            audience: jwtSettings["Audience"],
-            claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(jwtSettings["ExpiryMinutes"])),
-            signingCredentials: credentials
-        );
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var jwt = tokenHandler.WriteToken(token);
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
-    }
+            Console.WriteLine($"Generated JWT: {jwt}"); 
 
-    public bool VerifyPassword(string inputPassword, string hashedPassword)
-    {
-        return BCrypt.Net.BCrypt.Verify(inputPassword, hashedPassword);
+            return jwt;
+        }
+
     }
 }

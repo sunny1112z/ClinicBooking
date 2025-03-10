@@ -62,9 +62,22 @@
                 </div>
                 <a href="contact.html" class="nav-item nav-link">Contact</a>
             </div>
-            <a asp-controller="Auth" asp-action="Login" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block">
-                Login <i class="fa fa-arrow-right ms-3"></i>
-            </a>
+            @if (Context.Request.Cookies["JwtToken"] != null)
+            {
+                <form method="post" asp-controller="Auth" asp-action="Logout" class="d-inline">
+                    <button type="submit" class="btn btn-danger rounded-0 py-4 px-lg-5 d-none d-lg-block">
+                        Logout <i class="fa fa-sign-out-alt ms-3"></i>
+                    </button>
+                </form>
+            }
+            else
+            {
+                <a asp-controller="Auth" asp-action="Login" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block">
+                    Login <i class="fa fa-arrow-right ms-3"></i>
+                </a>
+            }
+
+
 
         </div>
     </nav>

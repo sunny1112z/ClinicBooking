@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ClinicBooking_Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicBooking.Entities;
@@ -36,7 +37,7 @@ public partial class ClinicBookingContext : DbContext
     public virtual DbSet<RatingLevel> RatingLevels { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
-
+    public DbSet<Role> Roles { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:ClinicBookingDB");
 
