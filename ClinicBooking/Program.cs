@@ -25,7 +25,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<EmailService>(); 
+builder.Services.AddScoped<JwtService>();
 
 
 

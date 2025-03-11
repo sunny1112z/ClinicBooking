@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ClinicBooking_Data.Repositories.Interfaces;
 using ClinicBooking.Entities;
 using Microsoft.EntityFrameworkCore;
+using ClinicBooking_Data.Entities;
 
 namespace ClinicBooking.Controllers
 {
@@ -52,8 +53,15 @@ namespace ClinicBooking.Controllers
                 Secure = Request.IsHttps,
                 Expires = DateTime.UtcNow.AddMinutes(60)
             });
+            int roleId = user.Role?.RoleId ?? 0;
+            if (roleId == 3)
+                return RedirectToAction("View", "Account");
+
+            if (roleId == 1)
+                return RedirectToAction("Index", "Home");
 
             return RedirectToAction("Index", "Home");
+           
         }
 
 

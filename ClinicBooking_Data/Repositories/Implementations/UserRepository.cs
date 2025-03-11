@@ -13,7 +13,10 @@ namespace ClinicBooking_Data.Repositories.Implementations
     public class UserRepository : Repository<User>, IUserRepository
     {
         public UserRepository(ClinicBookingContext context) : base(context) { }
-
+        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        {
+            return await _context.Users.Include(u => u.Role).Include(g=>g.Gender).ToListAsync();
+        }
         public async Task<User?> GetByUsernameAsync(string username)
         {
             return await _context.Users
@@ -25,8 +28,12 @@ namespace ClinicBooking_Data.Repositories.Implementations
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
+        public async Task AddUserAsync(User user)
+        {
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+        }
 
-     
         public async Task SaveResetTokenAsync(int userId, string token, DateTime expiry)
         {
             var user = await _context.Users.FindAsync(userId);
@@ -43,7 +50,7 @@ namespace ClinicBooking_Data.Repositories.Implementations
             return await _context.Users.FirstOrDefaultAsync(u => u.ResetToken == token);
         }
 
-        // 🟢 Cập nhật user sau khi reset mật khẩu
+     
         public async Task UpdateAsync(User user)
         {
             _context.Users.Update(user);

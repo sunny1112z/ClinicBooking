@@ -1,0 +1,28 @@
+﻿@model ClinicBooking.Entities.User
+
+<form id="createUserForm">
+    <div class="mb-3">
+        <label for="username" class="form-label">Tên đăng nhập</label>
+        <input type="text" class="form-control" id="username" name="UserName" required>
+    </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">Mật khẩu</label>
+        <input type="password" class="form-control" id="password" name="PasswordHash" required>
+    </div>
+    <button type="submit" class="btn btn-success">Lưu</button>
+</form>
+
+<script>
+    $("#createUserForm").submit(function (event) {
+        event.preventDefault();
+        var formData = $(this).serialize();
+
+        $.post("/Account/Create", formData, function (response) {
+            alert("Thêm mới thành công!");
+            $("#createModal").modal("hide"); // Ẩn modal
+            location.reload(); // Load lại danh sách
+        }).fail(function (xhr) {
+            alert("Lỗi: " + xhr.responseText);
+        });
+    });
+</script>

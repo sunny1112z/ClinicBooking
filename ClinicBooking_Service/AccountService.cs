@@ -5,13 +5,19 @@ public class AccountService
 {
     private readonly IUserRepository _userRepository;
     private readonly IRoleRepository _roleRepository;
-
+    public async Task<IEnumerable<User>> GetAllUsersAsync()
+    {
+        return await _userRepository.GetAllUsersAsync();
+    }
     public AccountService(IUserRepository userRepository, IRoleRepository roleRepository)
     {
         _userRepository = userRepository;
         _roleRepository = roleRepository;
     }
-
+    public async Task AddUserAsync(User user)
+    {
+        await _userRepository.AddUserAsync(user);
+    }
     public async Task<User?> GetUserByUsernameAsync(string username)
     {
         return await _userRepository.GetByUsernameAsync(username);
