@@ -1,5 +1,5 @@
 ﻿using ClinicBooking.Entities;
-using ClinicBooking_Data.Entities;
+
 using ClinicBooking_Data.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;

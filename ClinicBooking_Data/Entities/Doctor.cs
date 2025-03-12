@@ -13,8 +13,6 @@ public partial class Doctor
 
     public string FullName { get; set; } = null!;
 
-    public int Role { get; set; }
-
     public int? DepartmentId { get; set; }
 
     public string? Qualification { get; set; }
@@ -27,6 +25,8 @@ public partial class Doctor
 
     public bool Status { get; set; }
 
+    public int RoleId { get; set; }
+
     public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 
     public virtual Department? Department { get; set; }
@@ -34,4 +34,6 @@ public partial class Doctor
     public virtual ICollection<Faq> Faqs { get; set; } = new List<Faq>();
 
     public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
+
+    public virtual Role Role { get; set; } = null!;
 }

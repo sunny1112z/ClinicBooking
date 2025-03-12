@@ -1,4 +1,5 @@
-﻿using ClinicBooking_Data.Entities;
+﻿using ClinicBooking.Entities;
+
 using System.Threading.Tasks;
 
 namespace ClinicBooking_Data.Repositories.Interfaces

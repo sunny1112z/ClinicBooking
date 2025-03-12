@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using ClinicBooking_Data.Repositories.Interfaces;
 using ClinicBooking.Entities;
 using Microsoft.EntityFrameworkCore;
-using ClinicBooking_Data.Entities;
+
 
 namespace ClinicBooking.Controllers
 {
@@ -80,21 +80,21 @@ namespace ClinicBooking.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(User user)
+        public async Task<IActionResult> Register(RegisterModel model)
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
-                    return View(user);
+                    return View(model);
                 }
 
                 var newUser = await _accountService.RegisterAsync(
-                    user.FullName,
-                    user.Email,
-                    user.Phone,
-                    user.Username,
-                    user.PasswordHash
+                    model.FullName,
+                    model.Email,
+                    model.Phone,
+                    model.Username,
+                    model.Password
                 );
 
                 return RedirectToAction("Login");
@@ -102,9 +102,10 @@ namespace ClinicBooking.Controllers
             catch (Exception ex)
             {
                 ViewBag.Error = ex.Message;
-                return View(user);
+                return View(model);
             }
         }
+
 
         [HttpGet]
         public IActionResult ForgotPassword()
@@ -112,7 +113,6 @@ namespace ClinicBooking.Controllers
             return View();
         }
 
-        //  Xử lý yêu cầu quên mật khẩu
         [HttpPost]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordModel model)
         {
