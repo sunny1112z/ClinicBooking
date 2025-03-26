@@ -1,14 +1,18 @@
 ﻿using ClinicBooking.Entities;
-
 using ClinicBooking_Data.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace ClinicBooking_Data.Repositories.Implementations
 {
-    public class RoleRepository : Repository<Role>, IRoleRepository
+    public class RoleRepository : IRoleRepository
     {
-        public RoleRepository(ClinicBookingContext context) : base(context) { }
+        private readonly ClinicBookingContext _context;
+
+        public RoleRepository(ClinicBookingContext context)
+        {
+            _context = context;
+        }
 
         public async Task<Role?> GetByIdAsync(int id)
         {

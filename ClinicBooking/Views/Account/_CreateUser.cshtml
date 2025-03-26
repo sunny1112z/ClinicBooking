@@ -2,6 +2,24 @@
 
 <form id="createUserForm">
     <div class="mb-3">
+        <label for="fullName" class="form-label">Họ và Tên</label>
+        <input type="text" class="form-control" id="fullName" name="FullName" required>
+    </div>
+    <input type="hidden" name="RoleId" value="2" />
+
+    <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="email" name="Email" required>
+    </div>
+    <div class="mb-3">
+        <label for="phone" class="form-label">Điện thoại</label>
+        <input type="text" class="form-control" id="phone" name="Phone" required>
+    </div>
+    <div class="mb-3">
+        <label for="address" class="form-label">Địa chỉ</label>
+        <input type="text" class="form-control" id="address" name="Address" required>
+    </div>
+    <div class="mb-3">
         <label for="username" class="form-label">Tên đăng nhập</label>
         <input type="text" class="form-control" id="username" name="UserName" required>
     </div>
@@ -19,10 +37,20 @@
 
         $.post("/Account/Create", formData, function (response) {
             alert("Thêm mới thành công!");
-            $("#createModal").modal("hide"); // Ẩn modal
-            location.reload(); // Load lại danh sách
+            $("#createModal").modal("hide");
+            location.reload();
         }).fail(function (xhr) {
-            alert("Lỗi: " + xhr.responseText);
+            console.error("Lỗi:", xhr);
+
+            var errorMessage = "Có lỗi xảy ra!";
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+            } else if (xhr.responseText) {
+                errorMessage = xhr.responseText;
+            }
+
+            alert("Lỗi: " + errorMessage);
         });
     });
 </script>
+

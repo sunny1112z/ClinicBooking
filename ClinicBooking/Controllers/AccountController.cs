@@ -35,11 +35,32 @@ namespace ClinicBooking.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return PartialView("_CreateUser", model);
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Any())
+                    .ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToList()
+                    );
+
+                return BadRequest(new { success = false, errors });
             }
-            model.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.PasswordHash);
-            await _accountService.AddUserAsync(model);
-            return Json(new { success = true });
+
+            try
+            {
+                var existingUser = await _accountService.GetUserByEmailAsync(model.Email);
+                if (existingUser != null)
+                {
+                    return BadRequest(new { success = false, message = "Email đã tồn tại, vui lòng chọn email khác!" });
+                }
+                model.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.PasswordHash);
+                await _accountService.AddUserAsync(model);
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = "Lỗi hệ thống: " + ex.Message });
+            }
         }
+
     }
 }

@@ -89,22 +89,28 @@ namespace ClinicBooking.Controllers
                     return View(model);
                 }
 
-                var newUser = await _accountService.RegisterAsync(
-                    model.FullName,
-                    model.Email,
-                    model.Phone,
-                    model.Username,
-                    model.Password
-                );
+                    var newUser = await _accountService.RegisterAsync(
+                        model.FullName,
+                        model.Email,
+                        model.Phone,
+                        model.Username,
+                        model.Password
+                    );
 
-                return RedirectToAction("Login");
+                    return RedirectToAction("Login");
+                }
+                catch (DbUpdateException ex) // Bắt lỗi khi lưu database
+                {
+                    ViewBag.Error = ex.InnerException?.Message ?? ex.Message;
+                    return View(model);
+                }
+                catch (Exception ex) 
+                {
+                    ViewBag.Error = ex.Message;
+                    return View(model);
+                }
+            
             }
-            catch (Exception ex)
-            {
-                ViewBag.Error = ex.Message;
-                return View(model);
-            }
-        }
 
 
         [HttpGet]

@@ -9,6 +9,12 @@ public class AccountService
     {
         return await _userRepository.GetAllUsersAsync();
     }
+    public async Task<User?> GetUserByEmailAsync(string email)
+    {
+        return await _userRepository.GetByEmailAsync(email);
+    }
+
+
     public AccountService(IUserRepository userRepository, IRoleRepository roleRepository)
     {
         _userRepository = userRepository;
@@ -25,7 +31,7 @@ public class AccountService
 
     public async Task CreateUserAsync(User user)
     {
-        await _userRepository.AddAsync(user);
+        await _userRepository.AddUserAsync(user);
     }
 
     public async Task<User?> RegisterAsync(string fullname, string email, string phone, string username, string password)
@@ -46,14 +52,17 @@ public class AccountService
         var newUser = new User
         {
             FullName = fullname,
-            Email = email,
-            Phone = phone,
-            Username = username,
+            Email = email ?? throw new Exception("Email cannot be null"),
+            Phone = phone ?? throw new Exception("Phone cannot be null"),
+            Username = username ?? throw new Exception("Username cannot be null"),
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
-            RoleId = userRole.RoleId 
+            RoleId = userRole.RoleId
         };
 
-        await _userRepository.AddAsync(newUser);
+       
+
+
+        await _userRepository.AddUserAsync(newUser);
         return newUser;
     }
 

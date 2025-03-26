@@ -79,7 +79,7 @@ namespace ClinicBooking.Services
             await _userRepository.SaveResetTokenAsync(user.UserId, token, expiry);
 
             // Tạo URL reset mật khẩu và gửi qua email
-            string resetLink = $"https://localhost:7278/Auth/ResetPassword?token={token}";
+            string resetLink = $"https://localhost:7209/Auth/ResetPassword?token={token}";
             await _emailService.SendEmailAsync(user.Email, "Reset Password", $"Click here to reset: {resetLink}");
 
             return true;
@@ -100,7 +100,7 @@ namespace ClinicBooking.Services
             user.ResetToken = null;
             user.ResetTokenExpiry = null;
 
-            await _userRepository.UpdateAsync(user);
+            await _userRepository.UpdateUserAsync(user);
             return true;
         }
     }
