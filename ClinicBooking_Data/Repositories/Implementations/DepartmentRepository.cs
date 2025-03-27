@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace ClinicBooking_Data.Repositories.Implementations
 {
-    public class DepartmentRepository : IDepartmentRepository
+    public class IDepartmentRepository : Interfaces.IDepartmentRepository
     {
         private readonly ClinicBookingContext _context;
 
-        public DepartmentRepository(ClinicBookingContext context)
+        public IDepartmentRepository(ClinicBookingContext context)
         {
             _context = context;
         }
