@@ -1,109 +1,159 @@
 ﻿@model IEnumerable<ClinicBooking.Entities.User>
 
 @{
-    ViewData["Title"] = "Quản lý tài khoản";
-    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+	ViewData["Title"] = "Quản lý tài khoản";
+	Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
 <div class="container mt-4">
-    <h2 class="mb-3">Quản lý tài khoản</h2>
-    <button type="button" class="btn btn-primary" id="btnOpenCreate">
-        Thêm mới
-    </button>
+	<h2 class="mb-3">Quản lý tài khoản</h2>
+	<button type="button" class="btn btn-primary m-3" id="btnOpenCreate">
+		Thêm mới
+	</button>
 
-    <!-- Modal -->
-    <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createModalLabel">Thêm  bác sĩ</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="modalContent">
-                        <!-- Nội dung từ _CreateUser.cshtml sẽ load vào đây -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+	<!-- Modal -->
+	<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="createModalLabel">Thêm  bác sĩ</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div id="modalContent">
+						<!-- Nội dung từ _CreateUser.cshtml sẽ load vào đây -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Modal Edit -->
+	<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="editModalLabel">Chỉnh sửa tài khoản</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div id="editModalContent">
+						<!-- Nội dung từ _EditUser.cshtml sẽ load vào đây -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Modal Chi Tiết -->
+	<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="detailsModalLabel">Chi tiết tài khoản</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div id="detailsModalContent">
+						<!-- Nội dung từ _UserDetails.cshtml sẽ load vào đây -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
-    <table class="table table-striped table-hover">
-        <thead class="table-dark text-center">
-            <tr>
-                <th>Họ & Tên</th>
-                <th>Email</th>
-                <th>Điện thoại</th>
-                <th>Tên đăng nhập</th>
-                <th>Địa chỉ</th>
-                <th>CMND/CCCD</th>
-                <th>Avatar</th>
-                <th>Vai trò</th>
-                <th>Giới tính</th>
-                <th>Hành động</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr class="align-middle text-center">
-                    <td>@item.FullName</td>
-                    <td>@item.Email</td>
-                    <td>@item.Phone</td>
-                    <td>@item.Username</td>
-                    <td>@item.Address</td>
-                    <td>@item.NationalId</td>
-                    <td>
-                        <img src="@(!string.IsNullOrEmpty(item.Avatar) ? "/uploads/" + item.Avatar : "/images/default-avatar.png")"
-                             class="rounded-circle"
-                             width="50" height="50"
-                             alt="Avatar">
-                    </td>
-                    <td>@item.Role?.RoleName</td>
-                    <td>@item.Gender?.GenderName</td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.UserId" class="btn btn-sm btn-warning">Sửa</a>
-                        <a asp-action="Details" asp-route-id="@item.UserId" class="btn btn-sm btn-info">Chi tiết</a>
-                        <a href="javascript:void(0);" data-id="@item.UserId" class="btn btn-sm btn-danger btnDelete">Xóa</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+	<table class="table table-striped table-hover">
+		<thead class="table-dark text-center">
+			<tr>
+				<th>Họ & Tên</th>
+				<th>Email</th>
+				<th>Điện thoại</th>
+				<th>Avatar</th>
+				<th>Vai trò</th>
+				<th>Trạng thái </th>
+				<th>Hành động</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in Model)
+			{
+				<tr class="align-middle text-center">
+					<td>@item.FullName</td>
+					<td>@item.Email</td>
+					<td>@item.Phone</td>
+					<td>
+						<img src="@(!string.IsNullOrEmpty(item.Avatar) ? "/uploads/" + item.Avatar : "/images/default-avatar.png")"
+							 class="rounded-circle"
+							 width="50" height="50"
+							 alt="Avatar">
+					</td>
+					<td>@item.Role?.RoleName</td>
+					<td>@item.IsActive</td>
+					<td>
+						<a href="javascript:void(0);" data-id="@item.UserId" class="btn btn-sm btn-warning btnEdit">Sửa</a>
+
+						<a href="javascript:void(0);" data-id="@item.UserId" class="btn btn-sm btn-info btnViewDetails">Chi tiết</a>
+
+						<a href="javascript:void(0);" data-id="@item.UserId" class="btn btn-sm btn-danger btnDelete">Xóa</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    $(document).ready(function () {
-        // Hiển thị form tạo user trong modal
-        $("#btnOpenCreate").click(function () {
-            $.get("@Url.Action("Create", "Account")", function (data) {
-                $("#modalContent").html(data);
-                $("#createModal").modal("show");
-            }).fail(function (xhr) {
-                alert("Lỗi khi tải form: " + xhr.responseText);
-            });
-        });
+	$(document).ready(function () {
+		// Hiển thị form tạo user trong modal
+		$("#btnOpenCreate").click(function () {
+			$.get("@Url.Action("Create", "Account")", function (data) {
+				$("#modalContent").html(data);
+				$("#createModal").modal("show");
+			}).fail(function (xhr) {
+				alert("Lỗi khi tải form: " + xhr.responseText);
+			});
+		});
 
-        // Xóa user bằng Ajax
-        $(document).on("click", ".btnDelete", function () {
-            if (!confirm("Bạn có chắc muốn xóa?")) return;
+		// Mở form chỉnh sửa trong modal
+		 $(document).on("click", ".btnEdit", function () {
+		var userId = $(this).data("id");
 
-            var userId = $(this).data("id");
+		$.get("@Url.Action("Edit", "Account")", { id: userId }, function (data) {
+			$("#editModalContent").html(data);
+			$("#editModal").modal("show");
+		}).fail(function (xhr) {
+			alert("Lỗi khi tải form chỉnh sửa: " + xhr.responseText);
+		});
+	});
+		$(document).on("click", ".btnViewDetails", function () {
+			var userId = $(this).data("id");
 
-            $.ajax({
-                url: "@Url.Action("Delete", "Account")/" + userId,
-                type: "POST",
-                success: function () {
-                    alert("Xóa thành công!");
-                    location.reload();
-                },
-                error: function (xhr) {
-                    alert("Lỗi khi xóa: " + xhr.responseText);
-                }
-            });
-        });
-    });
+			$.get("@Url.Action("Details", "Account")", { id: userId }, function (data) {
+				$("#detailsModalContent").html(data);
+				$("#detailsModal").modal("show");
+			}).fail(function (xhr) {
+				alert("Lỗi khi tải chi tiết: " + xhr.responseText);
+			});
+		});
+
+		// Xóa user bằng Ajax
+		$(document).on("click", ".btnDelete", function () {
+			if (!confirm("Bạn có chắc muốn xóa?")) return;
+
+			var userId = $(this).data("id");
+
+			$.ajax({
+				url: "@Url.Action("Delete", "Account")/" + userId,
+				type: "POST",
+				success: function () {
+					alert("Xóa thành công!");
+					location.reload();
+				},
+				error: function (xhr) {
+					alert("Lỗi khi xóa: " + xhr.responseText);
+				}
+			});
+		});
+	});
 </script>

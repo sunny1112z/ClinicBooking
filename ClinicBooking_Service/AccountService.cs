@@ -1,5 +1,6 @@
 ﻿using ClinicBooking.Entities;
 using ClinicBooking_Data.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore.Update.Internal;
 
 public class AccountService
 {
@@ -13,8 +14,6 @@ public class AccountService
     {
         return await _userRepository.GetByEmailAsync(email);
     }
-
-
     public AccountService(IUserRepository userRepository, IRoleRepository roleRepository)
     {
         _userRepository = userRepository;
@@ -24,9 +23,18 @@ public class AccountService
     {
         await _userRepository.AddUserAsync(user);
     }
+    public async Task<bool> UpdateUserAsync(User user)
+    {
+        await _userRepository.UpdateUserAsync(user);
+        return true;
+    }
     public async Task<User?> GetUserByUsernameAsync(string username)
     {
         return await _userRepository.GetByUsernameAsync(username);
+    }
+    public async Task<User?> GetUserByIdAsync(int id)
+    {
+        return await _userRepository.GetUserByIdAsync(id);
     }
 
     public async Task CreateUserAsync(User user)
@@ -41,8 +49,6 @@ public class AccountService
         {
             throw new Exception("Username already exists.");
         }
-
-        //  Gọi Repo để lấy Role
         var userRole = await _userRepository.GetRoleByIdAsync(2);
         if (userRole == null)
         {
@@ -58,10 +64,6 @@ public class AccountService
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
             RoleId = userRole.RoleId
         };
-
-       
-
-
         await _userRepository.AddUserAsync(newUser);
         return newUser;
     }

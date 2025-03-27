@@ -1,0 +1,49 @@
+﻿@model ClinicBooking.Entities.User
+
+<form id="editUserForm">
+    <div class="mb-3">
+        <label class="form-label">Họ & Tên</label>
+        <input type="text" class="form-control" name="FullName" value="@Model.FullName" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-control" name="Email" value="@Model.Email" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Số điện thoại</label>
+        <input type="text" class="form-control" name="Phone" value="@Model.Phone" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Username </label>
+        <input type="text" class="form-control" name="Username" value="@Model.Username" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Password </label>
+        <input type="text" class="form-control" name="PasswordHash" value="@Model.PasswordHash" required>
+    </div>
+    <input type="hidden" name="RoleId" value="@Model.RoleId">
+    <input type="hidden" name="UserId" value="@Model.UserId">
+    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+</form>
+
+<script>
+    $(document).ready(function () {
+        $("#editUserForm").submit(function (event) {
+            event.preventDefault();
+
+            $.ajax({
+                url: "@Url.Action("Update", "Account")",
+                type: "POST",
+                data: $(this).serialize(),
+                success: function () {
+                    alert("Cập nhật thành công!");
+                    $("#editModal").modal("hide");
+                    location.reload();
+                },
+                error: function (xhr) {
+                    alert("Lỗi khi cập nhật: " + xhr.responseText);
+                }
+            });
+        });
+    });
+</script>

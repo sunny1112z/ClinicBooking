@@ -141,3 +141,4 @@ CREATE TABLE Ratings (
 
 -- Thêm dữ liệu mẫu vào bảng Roles
 INSERT INTO Roles (RoleName) VALUES ('Patient'), ('Doctor'), ('Admin');
+ALTER TABLE Users ADD isActive INT NOT NULL DEFAULT 1;

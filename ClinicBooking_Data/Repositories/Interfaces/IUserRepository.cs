@@ -18,5 +18,6 @@ namespace ClinicBooking_Data.Repositories.Interfaces
         Task AddUserAsync(User user);
         Task UpdateUserAsync(User user);
         Task DeleteUserAsync(int userId);
+        Task<User?> GetUserByIdAsync(int id);
     }
 }

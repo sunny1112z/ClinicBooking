@@ -1,6 +1,7 @@
 ﻿using ClinicBooking.Entities;
 using ClinicBooking.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace ClinicBooking.Controllers
 {
@@ -21,7 +22,7 @@ namespace ClinicBooking.Controllers
             var users = await _accountService.GetAllUsersAsync();
             return View(users);
         }
-
+        //Create Account 
        
         [HttpGet]
         public IActionResult Create()
@@ -62,5 +63,54 @@ namespace ClinicBooking.Controllers
             }
         }
 
+        // Update Account
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var user = await _accountService.GetUserByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return PartialView("_EditUser", user);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Update(User model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Any())
+                    .ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToList()
+                    );
+
+                return BadRequest(new { success = false, errors });
+            }
+
+            var user = await _accountService.GetUserByIdAsync(model.UserId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.FullName = model.FullName;
+            user.Email = model.Email;
+            user.Phone = model.Phone;
+            user.Address = model.Address;
+            user.RoleId = model.RoleId;
+            user.GenderId = model.GenderId;
+
+            var result = await _accountService.UpdateUserAsync(user);
+
+            if (result)
+            {
+                return Json(new { success = true, message = "Cập nhật thành công!" });
+            }
+
+            return StatusCode(500, "Có lỗi xảy ra khi cập nhật.");
+        }
     }
 }
