@@ -1,0 +1,58 @@
+﻿@{
+    ViewData["Title"] = "Đặt lịch khám theo bác sĩ";
+}
+
+<div class="container mt-5 text-center">
+    <h2 class="text-success">Đặt lịch khám theo bác sĩ</h2>
+    <p>Vui lòng chọn chuyên khoa để hệ thống gợi ý các bác sĩ chuyên môn phù hợp nhất.</p>
+
+    <div class="card shadow-sm p-4 mx-auto" style="max-width: 1000px;">
+        <form>
+            <div class="mb-3 text-start">
+                <label for="specialty" class="form-label fw-bold">Chuyên khoa:</label>
+                <select id="specialty" class="form-select">
+                    <option value="">- Chọn chuyên khoa -</option>
+                    @foreach (var dept in ViewBag.Departments)
+                    {
+                        <option value="@dept.DepartmentId">@dept.DepartmentName</option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3 text-start">
+                <label for="doctor" class="form-label fw-bold">Bác sĩ:</label>
+                <select id="doctor" class="form-select">
+                    <option value="">- Chọn bác sĩ -</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-secondary w-100">Tiếp tục</button>
+        </form>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#specialty").change(function () {
+            var departmentId = $(this).val();
+            if (departmentId) {
+                $.ajax({
+                    url: "/Appointments/GetDoctorsByDepartment?departmentId=" + departmentId,
+                    type: "GET",
+                    success: function (data) {
+                        var doctorSelect = $("#doctor");
+                        doctorSelect.empty();
+                        doctorSelect.append('<option value="">- Chọn bác sĩ -</option>');
+                        $.each(data, function (index, doctor) {
+                            doctorSelect.append('<option value="' + doctor.doctorId + '">' + doctor.fullName + '</option>');
+                        });
+                    },
+                    error: function () {
+                        alert("Lỗi khi tải danh sách bác sĩ.");
+                    }
+                });
+            }
+        });
+    });
+</script>

@@ -28,10 +28,15 @@ builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<EmailService>();
-builder.Services.AddScoped<IDepartmentRepository, IDepartmentRepository>();
+
+builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<DepartmentsService>();
+
+
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<AppointmentService>();
+builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
+builder.Services.AddScoped<DoctorService>();
 builder.Services.AddScoped<JwtService>();
 
 

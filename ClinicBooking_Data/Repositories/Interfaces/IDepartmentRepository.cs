@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ClinicBooking_Data.Repositories.Interfaces
 {
-    interface IDepartmentRepository
+  public   interface IDepartmentRepository
     {
         Task<IEnumerable<Department>> GetAllAsync();
         Task<Department> GetByIdAsync(int id);
