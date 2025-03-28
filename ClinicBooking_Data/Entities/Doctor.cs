@@ -34,6 +34,6 @@ public partial class Doctor
     public virtual ICollection<Faq> Faqs { get; set; } = new List<Faq>();
 
     public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
-
+    public virtual ICollection<WorkSchedule> WorkSchedules { get; set; } = new List<WorkSchedule>();
     public virtual Role Role { get; set; } = null!;
 }

@@ -142,3 +142,17 @@ CREATE TABLE Ratings (
 -- Thêm dữ liệu mẫu vào bảng Roles
 INSERT INTO Roles (RoleName) VALUES ('Patient'), ('Doctor'), ('Admin');
 ALTER TABLE Users ADD isActive INT NOT NULL DEFAULT 1;
+CREATE TABLE [dbo].[WorkSchedules] (
+    [ScheduleID] INT IDENTITY(1,1) PRIMARY KEY,
+    [DoctorID] INT NOT NULL,
+    [WorkDate] DATE NOT NULL, -- Ngày làm việc
+    [StartTime] TIME NOT NULL, -- Giờ bắt đầu
+    [EndTime] TIME NOT NULL,   -- Giờ kết thúc
+    [Status] INT NOT NULL DEFAULT 1, -- Trạng thái (1: Hoạt động, 0: Nghỉ)
+    [CreatedBy] INT NOT NULL, -- Ai tạo lịch (Admin)
+    FOREIGN KEY ([DoctorID]) REFERENCES [dbo].[Doctors]([DoctorID]),
+    FOREIGN KEY ([CreatedBy]) REFERENCES [dbo].[Users]([UserID])
+);
+ALTER TABLE [dbo].[Appointments] ADD [ScheduleID] INT NULL;
+ALTER TABLE [dbo].[Appointments] ADD CONSTRAINT FK_Appointments_WorkSchedules 
+FOREIGN KEY ([ScheduleID]) REFERENCES [dbo].[WorkSchedules]([ScheduleID]);

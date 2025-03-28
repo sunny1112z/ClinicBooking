@@ -1,0 +1,143 @@
+﻿@model IEnumerable<ClinicBooking.Entities.WorkSchedule>
+
+@{
+    ViewData["Title"] = "Quản lý Lịch Làm Việc";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-3">Quản lý Lịch Làm Việc</h2>
+    <button type="button" class="btn btn-primary m-3" id="btnOpenCreate">
+        Thêm mới
+    </button>
+
+    <!-- Modal Create -->
+    <div class="modal fade" id="createModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Thêm Lịch Làm Việc</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chỉnh sửa Lịch Làm Việc</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="editModalContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Delete -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Xóa Lịch Làm Việc</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc muốn xóa lịch làm việc này?</p>
+                    <input type="hidden" id="deleteScheduleId" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-danger" id="confirmDelete">Xóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-striped table-hover">
+        <thead class="table-dark text-center">
+            <tr>
+                <th>Ngày làm việc</th>
+                <th>Giờ bắt đầu</th>
+                <th>Giờ kết thúc</th>
+                <th>Trạng thái</th>
+                <th>Bác sĩ</th>
+                <th>Người tạo</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class="align-middle text-center">
+                    <td>@item.WorkDate.ToString("dd/MM/yyyy")</td>
+                    <td>@item.StartTime</td>
+                    <td>@item.EndTime</td>
+                    <td>
+                        @(item.Status == 0 ? "Chưa xác nhận " :
+                            item.Status == 1 ? "Đã xác nhận " :
+                            item.Status == 2 ? "Đã hoàn thành " :
+                            item.Status == 3 ? "Đã hủy" :
+                            "Không xác định")
+                    </td>
+
+                    <td>@item.Doctor.FullName</td>
+                    <td>@item.User.Email</td>
+                    <td>
+                        <button class="btn btn-warning btnEdit" data-id="@item.ScheduleID">Sửa</button>
+                        <button class="btn btn-danger btnDelete" data-id="@item.ScheduleID">Xóa</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Hiển thị form tạo lịch làm việc
+        $("#btnOpenCreate").click(function () {
+            $.get("@Url.Action("Create", "WorkSchedule")", function (data) {
+                $("#modalContent").html(data);
+                $("#createModal").modal("show");
+            }).fail(function (xhr) {
+                alert("Lỗi tải form: " + xhr.responseText);
+            });
+        });
+
+        // Hiển thị form chỉnh sửa
+        $(document).on("click", ".btnEdit", function () {
+            var id = $(this).data("id");
+            $.get("@Url.Action("Edit", "WorkSchedule")", { id: id }, function (data) {
+                $("#editModalContent").html(data);
+                $("#editModal").modal("show");
+            }).fail(function (xhr) {
+                alert("Lỗi tải form chỉnh sửa: " + xhr.responseText);
+            });
+        });
+
+        // Hiển thị modal xóa
+        $(document).on("click", ".btnDelete", function () {
+            var id = $(this).data("id");
+            $("#deleteScheduleId").val(id);
+            $("#deleteModal").modal("show");
+        });
+
+        // Xác nhận xóa
+        $("#confirmDelete").click(function () {
+            var id = $("#deleteScheduleId").val();
+            $.post("@Url.Action("Delete", "WorkSchedule")", { id: id }, function () {
+                alert("Xóa thành công!");
+                location.reload();
+            }).fail(function (xhr) {
+                alert("Lỗi khi xóa: " + xhr.responseText);
+            });
+        });
+    });
+</script>

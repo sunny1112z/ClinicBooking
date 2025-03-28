@@ -25,9 +25,14 @@ public partial class Appointment
 
     public int DoctorId { get; set; }
 
+    public int? ScheduleID { get; set; }  
+
+   
     public virtual Doctor Doctor { get; set; } = null!;
 
-    public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
-
     public virtual User User { get; set; } = null!;
+
+    public virtual WorkSchedule? WorkSchedule { get; set; } 
+
+    public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
 }

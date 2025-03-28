@@ -35,6 +35,8 @@ public partial class ClinicBookingContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
+    public virtual DbSet<WorkSchedule> WorkSchedules { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:ClinicBookingDB");
 
@@ -226,7 +228,59 @@ public partial class ClinicBookingContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Users__RoleID__2E1BDC42");
         });
+        modelBuilder.Entity<WorkSchedule>(entity =>
+        {
+            entity.HasKey(e => e.ScheduleID).HasName("PK_WorkSchedules");
 
+            entity.Property(e => e.ScheduleID).HasColumnName("ScheduleID");
+            entity.Property(e => e.DoctorID).HasColumnName("DoctorID");
+            entity.Property(e => e.WorkDate).HasColumnType("date");
+            entity.Property(e => e.StartTime).HasColumnType("time");
+            entity.Property(e => e.EndTime).HasColumnType("time");
+            entity.Property(e => e.Status).HasDefaultValue(1);
+            entity.Property(e => e.UserId).HasColumnName("UserId");
+
+            entity.HasOne(d => d.Doctor)
+                .WithMany(p => p.WorkSchedules)
+                .HasForeignKey(d => d.DoctorID)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_WorkSchedules_Doctors");
+
+            entity.HasOne(d => d.User)
+                .WithMany(p => p.CreatedWorkSchedules)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_WorkSchedules_Users");
+        });
+
+        // Cập nhật bảng Appointments để có mối quan hệ với WorkSchedules
+        modelBuilder.Entity<Appointment>(entity =>
+        {
+            entity.HasKey(e => e.AppointmentId).HasName("PK_Appointments");
+
+            entity.Property(e => e.AppointmentId).HasColumnName("AppointmentID");
+            entity.Property(e => e.DoctorId).HasColumnName("DoctorID");
+            entity.Property(e => e.UserId).HasColumnName("UserID");
+            entity.Property(e => e.ScheduleID).HasColumnName("ScheduleID").IsRequired(false);
+
+            entity.HasOne(d => d.Doctor)
+                .WithMany(p => p.Appointments)
+                .HasForeignKey(d => d.DoctorId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Appointments_Doctors");
+
+            entity.HasOne(d => d.User)
+                .WithMany(p => p.Appointments)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Appointments_Users");
+
+            entity.HasOne(d => d.WorkSchedule)
+                .WithMany(p => p.Appointments)
+                .HasForeignKey(d => d.ScheduleID)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_Appointments_WorkSchedules");
+        });
         OnModelCreatingPartial(modelBuilder);
     }
 

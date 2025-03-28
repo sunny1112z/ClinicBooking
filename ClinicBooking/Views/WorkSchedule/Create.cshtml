@@ -1,0 +1,70 @@
+﻿@model ClinicBooking.Entities.WorkSchedule
+@{
+    Layout = null;
+}
+
+<form id="createForm">
+    <div class="mb-3">
+        <label class="form-label">Ngày làm việc</label>
+        <input type="date" class="form-control" name="WorkDate" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Giờ bắt đầu</label>
+        <input type="time" class="form-control" name="StartTime" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Giờ kết thúc</label>
+        <input type="time" class="form-control" name="EndTime" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Trạng thái</label>
+        <select class="form-control" name="Status">
+            <option value="0">Chưa xác nhận (Pending)</option>
+            <option value="1">Đã xác nhận (Confirmed)</option>
+            <option value="2">Đã hoàn thành (Completed)</option>
+            <option value="3">Đã hủy (Cancelled)</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Bác sĩ</label>
+        <select class="form-control" name="DoctorId" required>
+            @foreach (var doc in ViewBag.Doctor)
+            {
+                <option value="@doc.DoctorId">@doc.FullName</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Lưu</button>
+</form>
+
+<script>
+         $("#createForm").submit(function (event) {
+        event.preventDefault();
+
+        let formData = {
+            WorkDate: $("input[name='WorkDate']").val(),
+            StartTime: $("input[name='StartTime']").val() + ":00",
+            EndTime: $("input[name='EndTime']").val() + ":00",
+            Status: parseInt($("select[name='Status']").val()),
+            DoctorId: parseInt($("select[name='DoctorId']").val()), 
+            UserId: 1 
+        };
+
+        $.ajax({
+            url: "@Url.Action("Create", "WorkSchedule")",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(formData),
+            success: function () {
+                alert("Thêm thành công!");
+                location.reload();
+            },
+            error: function (xhr) {
+                alert("Lỗi: " + xhr.responseText);
+            }
+        });
+    });
+
+
+</script>
+

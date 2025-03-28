@@ -1,0 +1,111 @@
+﻿@{
+    ViewData["Title"] = "Đặt lịch khám theo bác sĩ";
+}
+<!-- FullCalendar CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.11.3/main.min.css" rel="stylesheet">
+<!-- FullCalendar JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.11.3/main.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.11.3/locales/vi.js"></script>
+
+<div class="container mt-5 text-center">
+    <h2 class="text-success">Đặt lịch khám theo bác sĩ</h2>
+    <p>Vui lòng chọn ngày và khung giờ để đặt lịch hẹn.</p>
+
+    <div class="card shadow-sm p-4 mx-auto" style="max-width: 1000px;">
+        @if (ViewBag.Department != null && ViewBag.Doctor != null)
+        {
+            <h4>Chuyên khoa: <span class="text-primary">@ViewBag.Department.DepartmentName</span></h4>
+            <h4>Bác sĩ: <span class="text-success">@ViewBag.Doctor.FullName</span></h4>
+        }
+        else
+        {
+            <p class="text-danger">Không tìm thấy thông tin bác sĩ hoặc chuyên khoa.</p>
+        }
+
+
+        <!-- Chọn ngày -->
+        <form method="get">
+            <input type="hidden" name="departmentId" value="@ViewBag.Department.DepartmentId" />
+            <input type="hidden" name="doctorId" value="@ViewBag.Doctor.DoctorId" />
+            <label for="selectedDate" class="form-label mt-3">Chọn ngày:</label>
+            <input type="date" name="selectedDate" value="@ViewBag.SelectedDate.ToString("yyyy-MM-dd")"
+                   class="form-control text-center" onchange="this.form.submit();" />
+        </form>
+
+        <hr />
+
+        <!-- Hiển thị khung giờ theo buổi -->
+        <div class="mt-3">
+            <h5 class="text-muted">Chọn thời gian</h5>
+
+            @if ((ViewBag.MorningSlots?.Count ?? 0) == 0 &&
+            (ViewBag.AfternoonSlots?.Count ?? 0) == 0 &&
+            (ViewBag.EveningSlots?.Count ?? 0) == 0)
+            {
+                <p class="text-danger">Bác sĩ không có lịch làm việc vào ngày này.</p>
+            }
+            else
+            {
+                <div class="mb-3">
+                    <h6>Buổi sáng</h6>
+                    @if (ViewBag.MorningSlots != null && ViewBag.MorningSlots.Count > 0)
+                    {
+                        <div class="d-flex flex-wrap">
+                            @foreach (var slot in ViewBag.MorningSlots)
+                            {
+                                <button class="btn btn-outline-primary m-2">
+                                    @slot.StartTime.ToString(@"hh\:mm")
+                                </button>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Không có lịch buổi sáng.</p>
+                    }
+                </div>
+
+                <div class="mb-3">
+                    <h6>Buổi chiều</h6>
+                    @if (ViewBag.AfternoonSlots != null && ViewBag.AfternoonSlots.Count > 0)
+                    {
+                        <div class="d-flex flex-wrap">
+                            @foreach (var slot in ViewBag.AfternoonSlots)
+                            {
+                                <button class="btn btn-outline-primary m-2">
+                                    @slot.StartTime.ToString(@"hh\:mm")
+                                </button>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Không có lịch buổi chiều.</p>
+                    }
+                </div>
+
+                <div class="mb-3">
+                    <h6>Buổi tối</h6>
+                    @if (ViewBag.EveningSlots != null && ViewBag.EveningSlots.Count > 0)
+                    {
+                        <div class="d-flex flex-wrap">
+                            @foreach (var slot in ViewBag.EveningSlots)
+                            {
+                                <button class="btn btn-outline-primary m-2">
+                                    @slot.StartTime.ToString(@"hh\:mm")
+                                </button>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Không có lịch buổi tối.</p>
+                    }
+                </div>
+            }
+
+        </div>
+
+        <button class="btn btn-success mt-3">Tiếp tục</button>
+    </div>
+</div>

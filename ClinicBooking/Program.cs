@@ -32,6 +32,10 @@ builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<DepartmentsService>();
 
+builder.Services.AddScoped<IWorkScheduleRepository, WorkScheduleRepository>();
+builder.Services.AddScoped<WorkScheduleService>();
+
+
 
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<AppointmentService>();

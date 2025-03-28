@@ -7,10 +7,10 @@
     <p>Vui lòng chọn chuyên khoa để hệ thống gợi ý các bác sĩ chuyên môn phù hợp nhất.</p>
 
     <div class="card shadow-sm p-4 mx-auto" style="max-width: 1000px;">
-        <form>
+        <form action="/Appointments/DoctorSchedule" method="get">
             <div class="mb-3 text-start">
                 <label for="specialty" class="form-label fw-bold">Chuyên khoa:</label>
-                <select id="specialty" class="form-select">
+                <select id="specialty" name="departmentId" class="form-select">
                     <option value="">- Chọn chuyên khoa -</option>
                     @foreach (var dept in ViewBag.Departments)
                     {
@@ -21,13 +21,14 @@
 
             <div class="mb-3 text-start">
                 <label for="doctor" class="form-label fw-bold">Bác sĩ:</label>
-                <select id="doctor" class="form-select">
+                <select id="doctor" name="doctorId" class="form-select">
                     <option value="">- Chọn bác sĩ -</option>
                 </select>
             </div>
 
             <button type="submit" class="btn btn-secondary w-100">Tiếp tục</button>
         </form>
+
     </div>
 </div>
 

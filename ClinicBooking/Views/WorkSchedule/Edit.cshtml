@@ -1,0 +1,80 @@
+﻿@model ClinicBooking.Entities.WorkSchedule
+@{
+	Layout = null;
+}
+
+<form id="editForm">
+	<input type="hidden" name="ScheduleID" value="@Model.ScheduleID" />
+
+	<div class="mb-3">
+		<label class="form-label">Ngày làm việc</label>
+		<input type="date" class="form-control" name="WorkDate" value="@Model.WorkDate.ToString("yyyy-MM-dd")" required />
+	</div>
+
+	<div class="mb-3">
+		<label class="form-label">Giờ bắt đầu</label>
+		<input type="time" class="form-control" name="StartTime" value="@Model.StartTime" required />
+	</div>
+
+	<div class="mb-3">
+		<label class="form-label">Giờ kết thúc</label>
+		<input type="time" class="form-control" name="EndTime" value="@Model.EndTime" required />
+	</div>
+
+	<div class="mb-3">
+		<label class="form-label">Trạng thái</label>
+		<select class="form-control" name="Status">
+			@foreach (var status in new List<(int, string)> { (0, "Chưa xác nhận"), (1, "Đã xác nhận"), (2, "Đã hoàn thành"), (3, "Đã hủy") })
+			{
+				<option value="@status.Item1" selected="@(Model.Status == status.Item1 ? "selected" : null)">
+					@status.Item2
+				</option>
+			}
+		</select>
+	</div>
+
+	<div class="mb-3">
+		<label class="form-label">Bác sĩ</label>
+		<select class="form-control" name="DoctorId" required>
+			@foreach (var doc in (List<ClinicBooking.Entities.Doctor>)ViewBag.Doctor)
+			{
+				if (doc.DoctorId == Model.DoctorID)
+				{
+					<option value="@doc.DoctorId" selected>@doc.FullName</option>
+				}
+				else
+				{
+					<option value="@doc.DoctorId">@doc.FullName</option>
+				}
+			}
+
+
+		</select>
+	</div>
+	<input type="hidden" name="UserId" value="1" />
+
+	<button type="submit" class="btn btn-primary">Lưu</button>
+</form>
+
+<script>
+	$(document).ready(function () {
+		$("#editForm").submit(function (event) {
+			event.preventDefault();
+
+			let formData = $(this).serialize();
+
+			$.ajax({
+				url: "@Url.Action("Edit", "WorkSchedule")",
+				type: "POST",
+				data: formData,
+				success: function (response) {
+					alert("Cập nhật thành công!");
+					window.location.reload();
+				},
+				error: function (xhr) {
+					alert("Lỗi: " + xhr.responseText);
+				}
+			});
+		});
+	});
+</script>

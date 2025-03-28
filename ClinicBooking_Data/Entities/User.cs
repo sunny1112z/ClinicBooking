@@ -40,6 +40,7 @@ public partial class User
     public virtual Gender? Gender { get; set; }
 
     public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
+    public virtual ICollection<WorkSchedule> CreatedWorkSchedules { get; set; } = new List<WorkSchedule>();
 
     public virtual Role? Role { get; set; } = null!;
     public int IsActive { get; set; }
