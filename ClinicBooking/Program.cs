@@ -1,7 +1,9 @@
 ﻿using ClinicBooking.Entities;
+using ClinicBooking.Repositories;
 using ClinicBooking.Services;
 using ClinicBooking_Data.Repositories.Implementations;
 using ClinicBooking_Data.Repositories.Interfaces;
+using ClinicBooking_Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -26,6 +28,10 @@ builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<IDepartmentRepository, IDepartmentRepository>();
+builder.Services.AddScoped<DepartmentsService>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<AppointmentService>();
 builder.Services.AddScoped<JwtService>();
 
 

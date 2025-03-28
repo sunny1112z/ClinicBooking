@@ -1,0 +1,31 @@
+﻿@model ClinicBooking.Entities.Department
+
+<form id="editForm">
+    <input type="hidden" asp-for="DepartmentId" />
+
+    <div class="form-group">
+        <label asp-for="DepartmentName"></label>
+        <input asp-for="DepartmentName" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Lưu</button>
+</form>
+
+<script>
+    $("#editForm").submit(function (e) {
+        e.preventDefault();
+        $.ajax({
+            url: "/Department/Edit",
+            type: "POST",
+            data: $(this).serialize(),
+            success: function (response) {
+                if (response.success) location.reload();
+            }
+        });
+    });
+</script>

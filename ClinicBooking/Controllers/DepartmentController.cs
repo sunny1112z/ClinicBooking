@@ -1,92 +1,85 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ClinicBooking.Services;
-using ClinicBooking_Service;
+using ClinicBooking.Entities;
 using System.Threading.Tasks;
+using ClinicBooking_Service;
+using Microsoft.EntityFrameworkCore;
+using X.PagedList.Extensions;
+
 namespace ClinicBooking.Controllers
 {
     public class DepartmentController : Controller
     {
-       
         private readonly DepartmentsService _departmentService;
-            public DepartmentController(DepartmentsService _departmentsService)
+
+        public DepartmentController(DepartmentsService departmentService)
         {
-            this._departmentService = _departmentsService;
+            _departmentService = departmentService;
         }
-        // GET: DepartmentController
-        public async Task<ActionResult> Index()
+
+
+        public async Task<IActionResult> Index(int? page)
         {
+            int pageSize = 10;
+            int pageNumber = page ?? 1;
+
             var departments = await _departmentService.GetAllClinicsAsync();
-            return View(departments);
+
+            var pagedList = departments.AsQueryable() 
+                                       .OrderBy(d => d.DepartmentName)
+                                       .ToPagedList(pageNumber, pageSize);
+
+            return View(pagedList);
         }
 
-        // GET: DepartmentController/Details/5
-        public ActionResult Details(int id)
+
+
+        // ========== CREATE ==========
+        public IActionResult Create()
         {
-            return View();
+            return PartialView("_Create");
         }
 
-        // GET: DepartmentController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: DepartmentController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<IActionResult> Create(Department department)
         {
-            try
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                await _departmentService.AddClinicAsync(department);
+                return Json(new { success = true, message = " Add chuyên khoa thành công!" });
             }
-            catch
-            {
-                return View();
-            }
+            return PartialView("_Create", department);
         }
 
-        // GET: DepartmentController/Edit/5
-        public ActionResult Edit(int id)
+        // ========== UPDATE ==========
+        public async Task<IActionResult> Edit(int id)
         {
-            return View();
+            var department = await _departmentService.GetClinicByIdAsync(id);
+            if (department == null) return NotFound();
+            return PartialView("_Edit", department);
         }
 
-        // POST: DepartmentController/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<IActionResult> Edit(Department department)
         {
-            try
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                await _departmentService.UpdateClinicAsync(department);
+                return Json(new { success = true });
             }
-            catch
-            {
-                return View();
-            }
+            return PartialView("_Edit", department);
         }
 
-        // GET: DepartmentController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: DepartmentController/Delete/5
+        // ========== DELETE ==========
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<IActionResult> Delete(int id)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            var department = await _departmentService.GetClinicByIdAsync(id);
+            if (department == null) return Json(new { success = false, message = "Không tìm thấy chuyên khoa!" });
+
+            await _departmentService.DeleteClinicAsync(id);
+            return Json(new { success = true });
         }
+
     }
 }
