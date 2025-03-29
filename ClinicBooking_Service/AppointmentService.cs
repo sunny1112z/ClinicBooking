@@ -14,7 +14,10 @@ namespace ClinicBooking.Services
         {
             _appointmentRepository = appointmentRepository;
         }
-
+        public async Task<bool> CheckAppointmentExistsAsync(int doctorId, DateTime selectedDate, TimeSpan selectedTime)
+        {
+            return await _appointmentRepository.CheckAppointmentExistsAsync(doctorId, selectedDate, selectedTime);
+        }
         public async Task<IEnumerable<Appointment>> GetAllAppointmentsAsync()
         {
             return await _appointmentRepository.GetAllAsync();

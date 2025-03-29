@@ -55,5 +55,14 @@ namespace ClinicBooking.Repositories
         {
             await _context.SaveChangesAsync();
         }
+        public async Task<bool> CheckAppointmentExistsAsync(int doctorId, DateTime selectedDate, TimeSpan selectedTime)
+        {
+            DateTime startDateTime = selectedDate.Date + selectedTime; 
+
+            return await _context.Appointments
+                .AnyAsync(a => a.DoctorId == doctorId &&
+                               a.StartTime == startDateTime);
+        }
+
     }
 }

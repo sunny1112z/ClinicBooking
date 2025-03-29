@@ -53,6 +53,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.RequireHttpsMetadata = false;
         options.SaveToken = true;
+
+        // 🛑 Hỗ trợ lấy JWT từ Cookie
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var token = context.Request.Cookies["JwtToken"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    context.Token = token;
+                }
+                return Task.CompletedTask;
+            }
+        };
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
@@ -82,7 +97,15 @@ app.UseStaticFiles();
 app.UseSession(); // Nếu có dùng session
 
 app.UseRouting();
-
+app.Use(async (context, next) =>
+{
+    var token = context.Request.Cookies["JwtToken"];
+    if (!string.IsNullOrEmpty(token))
+    {
+        context.Request.Headers.Authorization = $"Bearer {token}";
+    }
+    await next();
+});
 // ✅ Kích hoạt Authentication & Authorization
 app.UseAuthentication();
 app.UseAuthorization();

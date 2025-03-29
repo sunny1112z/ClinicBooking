@@ -1,0 +1,18 @@
+﻿<div class="container mt-4">
+    <h2 class="text-center text-success">Xác nhận lịch hẹn</h2>
+    <div class="card p-4">
+        <p><strong>Mã lịch hẹn:</strong> @Model.AppointmentId</p>
+        <p><strong>Bác sĩ:</strong> @Model.DoctorName</p>
+        <p><strong>Bệnh nhân:</strong> @Model.PatientName</p>
+        <p><strong>Ngày hẹn:</strong> @Model.AppointmentDate</p>
+        <p><strong>Thời gian:</strong> @Model.StartTime - @Model.EndTime</p>
+        <p><strong>Nội dung:</strong> @Model.Subject</p>
+    </div>
+
+    <form method="post" asp-action="ConfirmAppointment" asp-controller="Appointments">
+        <input type="hidden" name="appointmentId" value="@Model.AppointmentId" />
+        <button type="submit" class="btn btn-success mt-3">Xác nhận lịch hẹn</button>
+    </form>
+
+    <a href="@Url.Action("Index", "Home")" class="btn btn-primary mt-3">Quay về trang chủ</a>
+</div>

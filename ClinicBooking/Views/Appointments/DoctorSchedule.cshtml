@@ -53,9 +53,15 @@
                         <div class="d-flex flex-wrap">
                             @foreach (var slot in ViewBag.MorningSlots)
                             {
-                                <button class="btn btn-outline-primary m-2">
-                                    @slot.StartTime.ToString(@"hh\:mm")
-                                </button>
+                                <form method="post" action="@Url.Action("DoctorSchedule", "Appointments")" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="doctorId" value="@ViewBag.Doctor.DoctorId" />
+                                    <input type="hidden" name="selectedDate" value="@ViewBag.SelectedDate.ToString("yyyy-MM-dd")" />
+                                    <input type="hidden" name="selectedTime" value="@slot.StartTime.ToString(@"hh\:mm")" />
+                                    <button type="submit" class="btn btn-outline-primary m-2">
+                                        @slot.StartTime.ToString(@"hh\:mm")
+                                    </button>
+                                </form>
                             }
                         </div>
                     }
@@ -72,9 +78,17 @@
                         <div class="d-flex flex-wrap">
                             @foreach (var slot in ViewBag.AfternoonSlots)
                             {
-                                <button class="btn btn-outline-primary m-2">
-                                    @slot.StartTime.ToString(@"hh\:mm")
-                                </button>
+                                <form method="post" action="@Url.Action("DoctorSchedule", "Appointments")" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="doctorId" value="@ViewBag.Doctor.DoctorId" />
+                                    <input type="hidden" name="selectedDate" value="@ViewBag.SelectedDate.ToString("yyyy-MM-dd")" />
+                                    <input type="hidden" name="selectedTime" value="@slot.StartTime.ToString(@"hh\:mm")" />
+                                    <input type="hidden" name="Subject" class="form-control"  value="ok"required />
+
+                                    <button type="submit" class="btn btn-outline-primary m-2">
+                                        @slot.StartTime.ToString(@"hh\:mm")
+                                    </button>
+                                </form>
                             }
                         </div>
                     }
@@ -91,9 +105,15 @@
                         <div class="d-flex flex-wrap">
                             @foreach (var slot in ViewBag.EveningSlots)
                             {
-                                <button class="btn btn-outline-primary m-2">
-                                    @slot.StartTime.ToString(@"hh\:mm")
-                                </button>
+                                <form method="post" action="@Url.Action("DoctorSchedule", "Appointments")" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="doctorId" value="@ViewBag.Doctor.DoctorId" />
+                                    <input type="hidden" name="selectedDate" value="@ViewBag.SelectedDate.ToString("yyyy-MM-dd")" />
+                                    <input type="hidden" name="selectedTime" value="@slot.StartTime.ToString(@"hh\:mm")" />
+                                    <button type="submit" class="btn btn-outline-primary m-2">
+                                        @slot.StartTime.ToString(@"hh\:mm")
+                                    </button>
+                                </form>
                             }
                         </div>
                     }
@@ -103,7 +123,6 @@
                     }
                 </div>
             }
-
         </div>
 
         <button class="btn btn-success mt-3">Tiếp tục</button>

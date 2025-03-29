@@ -9,6 +9,7 @@ namespace ClinicBooking_Data.Repositories.Interfaces
 {
     public interface IAppointmentRepository
     {
+        Task<bool> CheckAppointmentExistsAsync(int doctorId, DateTime selectedDate, TimeSpan selectedTime);
         Task<IEnumerable<Appointment>> GetAllAsync();
         Task<Appointment?> GetByIdAsync(int id);
         Task AddAsync(Appointment appointment);
