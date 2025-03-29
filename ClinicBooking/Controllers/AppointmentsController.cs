@@ -53,6 +53,7 @@ namespace ClinicBooking.Controllers
 
             return View("BookDoctor");
         }
+
         public async Task<IActionResult> DoctorSchedule(int doctorId, DateTime? selectedDate)
         {
             DateTime searchDate = selectedDate ?? DateTime.Today;
@@ -60,6 +61,10 @@ namespace ClinicBooking.Controllers
             var doctor = await _doctorService.GetDoctorByIdAsync(doctorId);
             var department = await _departmentsService.GetClinicByIdAsync(doctorId);
             var schedule = await _workScheduleService.GetDoctorScheduleAsync(doctorId, searchDate) ?? new List<WorkSchedule>();
+
+            // Lấy danh sách lịch hẹn đã đặt
+            var bookedAppointments = await _appointmentService.GetBookedAppointmentsAsync(doctorId, searchDate);
+            var bookedSlots = bookedAppointments.Select(a => a.StartTime).ToList();
 
             // Chia theo buổi sáng, chiều, tối
             var morningSlots = schedule.Where(s => s.StartTime.Hours < 12).ToList();
@@ -72,9 +77,11 @@ namespace ClinicBooking.Controllers
             ViewBag.MorningSlots = morningSlots;
             ViewBag.AfternoonSlots = afternoonSlots;
             ViewBag.EveningSlots = eveningSlots;
+            ViewBag.BookedSlots = bookedSlots; // Gửi danh sách đã đặt xuống View
 
             return View();
         }
+
         [HttpPost]
 
         [ValidateAntiForgeryToken]

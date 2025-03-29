@@ -15,7 +15,12 @@ namespace ClinicBooking.Repositories
         {
             _context = context;
         }
-
+        public async Task<List<Appointment>> GetBookedAppointmentsAsync(int doctorId, DateTime date)
+        {
+            return await _context.Appointments
+                .Where(a => a.DoctorId == doctorId && a.StartTime.Date == date.Date)
+                .ToListAsync();
+        }
         public async Task<IEnumerable<Appointment>> GetAllAsync()
         {
             return await _context.Appointments.Include(a => a.Doctor).Include(a => a.User).ToListAsync();

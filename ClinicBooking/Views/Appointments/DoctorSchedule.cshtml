@@ -53,13 +53,18 @@
                         <div class="d-flex flex-wrap">
                             @foreach (var slot in ViewBag.MorningSlots)
                             {
+                                DateTime slotDateTime = ViewBag.SelectedDate.Add(slot.StartTime);
+                                bool isBooked = ViewBag.BookedSlots != null && ViewBag.BookedSlots.Contains(slotDateTime);
+
                                 <form method="post" action="@Url.Action("DoctorSchedule", "Appointments")" class="d-inline">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="doctorId" value="@ViewBag.Doctor.DoctorId" />
                                     <input type="hidden" name="selectedDate" value="@ViewBag.SelectedDate.ToString("yyyy-MM-dd")" />
                                     <input type="hidden" name="selectedTime" value="@slot.StartTime.ToString(@"hh\:mm")" />
-                                    <button type="submit" class="btn btn-outline-primary m-2">
+
+                                    <button type="submit" class="btn m-2 @(isBooked ? "btn-danger" : "btn-outline-primary")" @(isBooked ? "disabled" : "")>
                                         @slot.StartTime.ToString(@"hh\:mm")
+                                        @(isBooked ? "(Đã đặt)" : "")
                                     </button>
                                 </form>
                             }
@@ -78,15 +83,18 @@
                         <div class="d-flex flex-wrap">
                             @foreach (var slot in ViewBag.AfternoonSlots)
                             {
+                                DateTime slotDateTime = ViewBag.SelectedDate.Add(slot.StartTime);
+                                bool isBooked = ViewBag.BookedSlots != null && ViewBag.BookedSlots.Contains(slotDateTime);
+
                                 <form method="post" action="@Url.Action("DoctorSchedule", "Appointments")" class="d-inline">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="doctorId" value="@ViewBag.Doctor.DoctorId" />
                                     <input type="hidden" name="selectedDate" value="@ViewBag.SelectedDate.ToString("yyyy-MM-dd")" />
                                     <input type="hidden" name="selectedTime" value="@slot.StartTime.ToString(@"hh\:mm")" />
-                                    <input type="hidden" name="Subject" class="form-control"  value="ok"required />
 
-                                    <button type="submit" class="btn btn-outline-primary m-2">
+                                    <button type="submit" class="btn m-2 @(isBooked ? "btn-danger" : "btn-outline-primary")" @(isBooked ? "disabled" : "")>
                                         @slot.StartTime.ToString(@"hh\:mm")
+                                        @(isBooked ? "(Đã đặt)" : "")
                                     </button>
                                 </form>
                             }
@@ -105,13 +113,18 @@
                         <div class="d-flex flex-wrap">
                             @foreach (var slot in ViewBag.EveningSlots)
                             {
+                                DateTime slotDateTime = ViewBag.SelectedDate.Add(slot.StartTime);
+                                bool isBooked = ViewBag.BookedSlots != null && ViewBag.BookedSlots.Contains(slotDateTime);
+
                                 <form method="post" action="@Url.Action("DoctorSchedule", "Appointments")" class="d-inline">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="doctorId" value="@ViewBag.Doctor.DoctorId" />
                                     <input type="hidden" name="selectedDate" value="@ViewBag.SelectedDate.ToString("yyyy-MM-dd")" />
                                     <input type="hidden" name="selectedTime" value="@slot.StartTime.ToString(@"hh\:mm")" />
-                                    <button type="submit" class="btn btn-outline-primary m-2">
+
+                                    <button type="submit" class="btn m-2 @(isBooked ? "btn-danger" : "btn-outline-primary")" @(isBooked ? "disabled" : "")>
                                         @slot.StartTime.ToString(@"hh\:mm")
+                                        @(isBooked ? "(Đã đặt)" : "")
                                     </button>
                                 </form>
                             }
@@ -124,6 +137,7 @@
                 </div>
             }
         </div>
+
 
         <button class="btn btn-success mt-3">Tiếp tục</button>
     </div>
